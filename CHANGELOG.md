@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.1.1
+
+- The texture window now fits smaller screens and higher UI scales automatically.
+- Trimmed unnecessary work when opening the catalog and shared the path-field handlers to keep things light.
+- Corrected the author to SilverRavyn while keeping the original addon and artwork credits.
+
 ## 1.1.0
 
 - Updated the original ElvUI Chat Textures addon for Retail 12.1.0.

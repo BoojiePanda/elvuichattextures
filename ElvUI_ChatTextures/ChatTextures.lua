@@ -2,6 +2,7 @@ local addonName = ...
 local window
 local fontWidgets = {}
 local pathFields = {}
+local appliedFont
 local textureRoot = "Interface\\AddOns\\" .. addonName .. "\\"
 
 local groups = {
@@ -53,12 +54,6 @@ local groups = {
     } },
 }
 
-for _, group in ipairs(groups) do
-    table.sort(group.entries, function(a, b)
-        return a[1] < b[1]
-    end)
-end
-
 local function GetFontPath()
     local engine = _G.ElvUI and _G.ElvUI[1]
     return engine and engine.media and engine.media.normFont or _G.STANDARD_TEXT_FONT
@@ -66,9 +61,13 @@ end
 
 local function ApplyFonts()
     local font = GetFontPath()
+    if font == appliedFont then
+        return
+    end
     for _, entry in ipairs(fontWidgets) do
         entry.widget:SetFont(font, entry.size, "")
     end
+    appliedFont = font
 end
 
 local function RegisterFont(widget, size)
@@ -85,8 +84,29 @@ local function AddText(parent, text, size)
     return label
 end
 
+local function SelectPath(self)
+    self:HighlightText()
+end
+
+local function RestorePath(self, userInput)
+    if userInput and self:GetText() ~= self.texturePath then
+        self:SetText(self.texturePath)
+        self:HighlightText()
+    end
+end
+
+local function ResetPathSelection(self)
+    self:HighlightText(0, 0)
+    self:SetCursorPosition(0)
+end
+
+local function ClearPathFocus(self)
+    self:ClearFocus()
+end
+
 local function CreatePathField(parent, path, offset)
     local field = CreateFrame("EditBox", nil, parent, "InputBoxTemplate")
+    field.texturePath = path
     field:SetPoint("TOPLEFT", 5, -offset)
     field:SetPoint("TOPRIGHT", 0, -offset)
     field:SetHeight(28)
@@ -97,28 +117,12 @@ local function CreatePathField(parent, path, offset)
     field:SetMultiLine(false)
     field:SetText(path)
     field:SetCursorPosition(0)
-    field:SetScript("OnEditFocusGained", function(self)
-        self:HighlightText()
-    end)
-    field:SetScript("OnMouseUp", function(self)
-        self:HighlightText()
-    end)
-    field:SetScript("OnTextChanged", function(self, userInput)
-        if userInput and self:GetText() ~= path then
-            self:SetText(path)
-            self:HighlightText()
-        end
-    end)
-    field:SetScript("OnEditFocusLost", function(self)
-        self:HighlightText(0, 0)
-        self:SetCursorPosition(0)
-    end)
-    field:SetScript("OnEscapePressed", function(self)
-        self:ClearFocus()
-    end)
-    field:SetScript("OnEnterPressed", function(self)
-        self:ClearFocus()
-    end)
+    field:SetScript("OnEditFocusGained", SelectPath)
+    field:SetScript("OnMouseUp", SelectPath)
+    field:SetScript("OnTextChanged", RestorePath)
+    field:SetScript("OnEditFocusLost", ResetPathSelection)
+    field:SetScript("OnEscapePressed", ClearPathFocus)
+    field:SetScript("OnEnterPressed", ClearPathFocus)
     pathFields[#pathFields + 1] = field
 end
 
@@ -132,6 +136,18 @@ local function CreateWindow()
     frame:SetMovable(true)
     frame:EnableMouse(true)
     table.insert(UISpecialFrames, "ElvUIChatTexturesWindow")
+
+    local function FitToScreen()
+        local scale = math.min(1, (UIParent:GetWidth() - 40) / 740, (UIParent:GetHeight() - 40) / 620)
+        if scale > 0 then
+            frame:SetScale(scale)
+        end
+    end
+    UIParent:HookScript("OnSizeChanged", function()
+        if frame:IsShown() then
+            FitToScreen()
+        end
+    end)
 
     local dragArea = CreateFrame("Frame", nil, frame)
     dragArea:SetPoint("TOPLEFT", 1, -1)
@@ -192,6 +208,7 @@ local function CreateWindow()
     end
     scroll:SetScript("OnSizeChanged", UpdateScrollRange)
     frame:SetScript("OnShow", function()
+        FitToScreen()
         ApplyFonts()
         local version = C_AddOns.GetAddOnMetadata(addonName, "Version") or "?"
         title:SetText("ElvUI Chat Textures ver " .. version)
