@@ -1,0 +1,12 @@
+## Interface: 120100
+## Author: Pettrah (SileniaD) of Lightbringer
+## Version: 1.1.0
+## Title: |cff1784d1ElvUI Chat Textures|r
+## X-Credits: Blizzard Entertainment
+## X-Category: Artwork
+## Notes: Chat backgrounds with a copyable texture path catalog. Open with /ect.
+## X-Category: Interface Enhancements
+## X-License: All Rights Reserved
+## OptionalDeps: ElvUI, TukUI
+
+ChatTextures.lua
