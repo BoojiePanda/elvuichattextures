@@ -1,6 +1,6 @@
 # ElvUI Chat Textures
 
-ElvUI Chat Textures is an update to the original addon by Pettrah (SileniaD) of Lightbringer. It provides subtle crest backgrounds for ElvUI chat panels and an in-game window with copyable texture paths.
+ElvUI Chat Textures is an update to the original addon. It provides subtle crest backgrounds for ElvUI chat panels and an in-game window with copyable texture paths.
 
 ## Features
 
@@ -33,6 +33,6 @@ The catalog does not change your chat panel settings. Close it with the X button
 
 ## Author
 
-Original addon by **Pettrah (SileniaD) of Lightbringer**. Crest artwork by **Blizzard Entertainment**.
+Crest artwork by **Blizzard Entertainment**.
 
 Created by **BoojiePanda (SilverRavyn)**.
